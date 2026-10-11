@@ -12,6 +12,15 @@ const submitBtn = document.getElementById('submitBtn');
 let lastReportData = null;
 
 // ==========================================
+// API URL CONFIGURATION (Fixes the Fetch Error)
+// ==========================================
+// If running locally, use localhost. If hosted online (like GitHub Pages), 
+// change the second URL to your deployed cloud backend (e.g., Render, Railway).
+const API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://127.0.0.1:8000"
+    : "https://your-backend-service.onrender.com"; // <-- Replace with your cloud backend URL if deployed online
+
+// ==========================================
 // 1. Automatic Age Group Classification
 // ==========================================
 function updateAgeGroup(age) {
@@ -25,8 +34,6 @@ function updateAgeGroup(age) {
     }
     
     ageGroupDisplay.textContent = group;
-    
-    // Add a soft visual pulse effect on update
     ageGroupDisplay.style.transform = "scale(1.03)";
     setTimeout(() => {
         ageGroupDisplay.style.transform = "scale(1)";
@@ -39,7 +46,7 @@ ageInput.addEventListener('input', (e) => {
 });
 
 // ==========================================
-// 2. Drag & Drop and File Selection Handler
+// 2. File Selection Handler
 // ==========================================
 fileInput.addEventListener('change', (e) => {
     handleFileSelection(e.target.files[0]);
@@ -73,18 +80,16 @@ predictionForm.addEventListener('submit', async (e) => {
         return;
     }
 
-    // Prepare multipart form data
     const formData = new FormData();
     formData.append('patient_id', patientId);
     formData.append('age', age);
     formData.append('sex', sex);
     formData.append('file', selectedFile);
 
-    // Update UI to loading state
     setLoadingState(true);
 
     try {
-        const response = await fetch('http://127.0.0.1:8000/predict', {
+        const response = await fetch(`${API_BASE_URL}/predict`, {
             method: 'POST',
             body: formData
         });
@@ -97,29 +102,22 @@ predictionForm.addEventListener('submit', async (e) => {
         const data = await response.json();
         lastReportData = data;
         
-        // Render results into the dashboard
         renderReport(data);
         reportSection.style.display = 'block';
-        
-        // Smooth scroll to report output
         reportSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     } catch (err) {
         console.error('API Error:', err);
-        alert(`Analysis failed: ${err.message}\nEnsure the FastAPI backend is running on http://127.0.0.1:8000`);
+        alert(`Analysis failed: ${err.message}\n\nTip: If testing locally, open index.html using VS Code Live Server instead of GitHub Pages.`);
     } finally {
         setLoadingState(false);
     }
 });
 
-// Helper for loading button state
 function setLoadingState(isLoading) {
     if (isLoading) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `
-            <span class="spinner" style="display:inline-block; animation: spin 1s linear infinite;">⏳</span> 
-            Running QAOA & XGBoost Pipeline...
-        `;
+        submitBtn.innerHTML = `⏳ Running QAOA & XGBoost Pipeline...`;
     } else {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Run AI Genomic Analysis';
@@ -153,7 +151,7 @@ function renderReport(data) {
         <div class="report-section-box">
             <h3>Genomic Markers (QAOA Feature Selection)</h3>
             <p><strong>Important Genes Identified:</strong> ${gen.important_genes.join(', ')}</p>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Analyzed ${gen.genes_analyzed.toLocaleString()} data points down to ${gen.genes_selected} core predictive features.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px;">Analyzed genomic dataset down to ${gen.genes_selected} core predictive features.</p>
         </div>
 
         <div class="report-section-box">
@@ -184,7 +182,6 @@ function renderReport(data) {
 downloadBtn.addEventListener('click', () => {
     if (!lastReportData) return;
 
-    // Format clean text report output
     const p = lastReportData.patient_info;
     const pred = lastReportData.prediction;
     const cin = lastReportData.clinical_information;
@@ -227,7 +224,6 @@ requires formal clinical evaluation and pathology.
 ====================================================
     `.trim();
 
-    // Trigger text file download
     const blob = new Blob([reportText], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
