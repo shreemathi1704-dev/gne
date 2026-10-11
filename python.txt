@@ -1,0 +1,16 @@
+import os
+import joblib
+
+# 1. Ensure the 'backend/models/' directory exists
+os.makedirs("backend/models", exist_ok=True)
+
+# 2. Define and save your QAOA selected gene column names (list of strings)
+# (Make sure these match the exact column names present in your input CSV files)
+qaoa_genes = ["TP53", "BRCA1", "EGFR", "KRAS", "PIK3CA"]
+joblib.dump(qaoa_genes, "backend/models/qaoa_selected_genes.pkl")
+print("✅ QAOA selected genes saved successfully.")
+
+# 3. Save your trained XGBoost model (Assuming your trained model variable is named xgb_model)
+# Note: Ensure xgb_model is already trained using model.fit(...) before running this!
+joblib.dump(xgb_model, "backend/models/xgboost_cancer_model.pkl")
+print("✅ XGBoost model saved successfully.")
