@@ -9,7 +9,6 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
         <header class="header">
             <div class="logo">
                 <span class="pulse-icon">🧬</span>
@@ -47,10 +46,22 @@
                         <div id="ageGroupDisplay" class="readonly-badge">Adult</div>
                     </div>
 
+                    <!-- File Dropzone -->
                     <div class="input-group file-dropzone" id="dropZone">
                         <span class="upload-icon">📁</span>
                         <p id="fileNameText">Drag & drop genomic CSV file here or <span class="browse">browse</span></p>
-                        <input type="file" id="csvFile" accept=".csv" required>
+                        <input type="file" id="csvFile" accept=".csv">
+                    </div>
+
+                    <!-- Google Lens Style Camera Scanner Section -->
+                    <div class="input-group camera-section">
+                        <button type="button" id="toggleCameraBtn" class="btn-secondary" style="width: 100%; margin-bottom: 8px;">📷 Open Camera Scanner (Lens Mode)</button>
+                        
+                        <div id="cameraContainer" style="display: none; text-align: center;">
+                            <video id="cameraFeed" autoplay playsinline width="100%" style="border-radius: 8px; max-height: 200px; background: #000;"></video>
+                            <button type="button" id="captureBtn" class="btn-secondary" style="width: 100%; margin-top: 6px; background: rgba(6, 182, 212, 0.2); border-color: var(--accent-glow);">Capture Snapshot</button>
+                            <canvas id="snapshotCanvas" style="display: none;"></canvas>
+                        </div>
                     </div>
 
                     <button type="submit" id="submitBtn" class="btn-glow">Run AI Genomic Analysis</button>
@@ -64,9 +75,7 @@
                     <button id="downloadBtn" class="btn-secondary">Export Report</button>
                 </div>
 
-                <div class="report-body" id="reportContent">
-                    <!-- Dynamic Data Injected via JavaScript -->
-                </div>
+                <div class="report-body" id="reportContent"></div>
             </section>
         </div>
 

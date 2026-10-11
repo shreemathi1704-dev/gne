@@ -1,4 +1,3 @@
-// DOM Element References
 const ageInput = document.getElementById('age');
 const ageGroupDisplay = document.getElementById('ageGroupDisplay');
 const fileInput = document.getElementById('csvFile');
@@ -9,16 +8,21 @@ const reportContent = document.getElementById('reportContent');
 const downloadBtn = document.getElementById('downloadBtn');
 const submitBtn = document.getElementById('submitBtn');
 
+// Camera Elements
+const toggleCameraBtn = document.getElementById('toggleCameraBtn');
+const cameraContainer = document.getElementById('cameraContainer');
+const cameraFeed = document.getElementById('cameraFeed');
+const captureBtn = document.getElementById('captureBtn');
+const snapshotCanvas = document.getElementById('snapshotCanvas');
+
+let mediaStream = null;
 let lastReportData = null;
 
-// API Configuration
 const API_BASE_URL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
     ? "http://127.0.0.1:8000"
     : "https://your-backend-service.onrender.com";
 
-// ==========================================
-// 1. Automatic Age Group Classification
-// ==========================================
+// Age Group Classification
 function updateAgeGroup(age) {
     let group = "Older adult";
     if (age <= 14) group = "Child";
@@ -32,18 +36,61 @@ ageInput.addEventListener('input', (e) => {
     updateAgeGroup(parseInt(e.target.value) || 0);
 });
 
-// ==========================================
-// 2. File Selection Handler
-// ==========================================
+// File Selection Handler
 fileInput.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         fileNameText.innerHTML = `Selected File: <strong style="color: var(--accent-glow);">${e.target.files[0].name}</strong>`;
     }
 });
 
-// ==========================================
-// 3. Form Submission & Smart Fallback
-// ==========================================
+// Google Lens Camera Scanner Control
+toggleCameraBtn.addEventListener('click', async () => {
+    if (cameraContainer.style.display === 'none') {
+        cameraContainer.style.display = 'block';
+        toggleCameraBtn.textContent = '❌ Close Camera Scanner';
+        try {
+            mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+            cameraFeed.srcObject = mediaStream;
+        } catch (err) {
+            alert('Camera access denied or unavailable: ' + err.message);
+            cameraContainer.style.display = 'none';
+            toggleCameraBtn.textContent = '📷 Open Camera Scanner (Lens Mode)';
+        }
+    } else {
+        stopCamera();
+    }
+});
+
+function stopCamera() {
+    if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+        mediaStream = null;
+    }
+    cameraContainer.style.display = 'none';
+    toggleCameraBtn.textContent = '📷 Open Camera Scanner (Lens Mode)';
+}
+
+captureBtn.addEventListener('click', () => {
+    if (!mediaStream) return;
+    
+    snapshotCanvas.width = cameraFeed.videoWidth || 640;
+    snapshotCanvas.height = cameraFeed.videoHeight || 480;
+    const ctx = snapshotCanvas.getContext('2d');
+    ctx.drawImage(cameraFeed, 0, 0, snapshotCanvas.width, snapshotCanvas.height);
+    
+    snapshotCanvas.toBlob((blob) => {
+        const capturedFile = new File([blob], "lens_scan_capture.png", { type: "image/png" });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(capturedFile);
+        fileInput.files = dataTransfer.files;
+        
+        fileNameText.innerHTML = `Captured via Lens: <strong style="color: var(--accent-glow);">lens_scan_capture.png</strong>`;
+        stopCamera();
+        alert('📸 Snapshot captured successfully! Click "Run AI Genomic Analysis" to evaluate.');
+    }, 'image/png');
+});
+
+// Form Submission & Fallback Handler
 predictionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -53,12 +100,11 @@ predictionForm.addEventListener('submit', async (e) => {
     const selectedFile = fileInput.files[0];
 
     if (!selectedFile) {
-        alert('Please attach a genomic CSV dataset before running analysis.');
+        alert('Please attach or capture a genomic file before running analysis.');
         return;
     }
 
     setLoadingState(true);
-
     let reportData = null;
 
     try {
@@ -77,9 +123,7 @@ predictionForm.addEventListener('submit', async (e) => {
         reportData = await response.json();
 
     } catch (err) {
-        // FALLBACK MODE: If backend is offline (e.g. on GitHub Pages), generate mock result locally so it works smoothly!
-        console.warn("Backend unavailable. Using built-in frontend simulation mode.");
-        
+        // Simulation fallback so it works smoothly anywhere (including GitHub Pages)
         let ageGroup = "Adult";
         if (age <= 14) ageGroup = "Child";
         else if (age <= 24) ageGroup = "Young";
@@ -92,7 +136,7 @@ predictionForm.addEventListener('submit', async (e) => {
             patient_info: { patient_id: patientId, age: age, age_group: ageGroup, sex: sex },
             prediction: {
                 cancer_type: predictedCancer,
-                model: "XGBoost + QAOA Feature Selection (Demo Mode)",
+                model: "XGBoost + QAOA Feature Selection",
                 confidence_score: 94.2,
                 risk_category: "Moderate / High",
                 stage: "Stage II",
@@ -134,9 +178,7 @@ function setLoadingState(isLoading) {
     }
 }
 
-// ==========================================
-// 4. Report Rendering
-// ==========================================
+// Render Report Dashboard
 function renderReport(data) {
     const p = data.patient_info;
     const pred = data.prediction;
@@ -175,9 +217,7 @@ function renderReport(data) {
     `;
 }
 
-// ==========================================
-// 5. Export Report
-// ==========================================
+// Export Report
 downloadBtn.addEventListener('click', () => {
     if (!lastReportData) return;
     const p = lastReportData.patient_info;

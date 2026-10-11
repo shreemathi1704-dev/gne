@@ -130,7 +130,7 @@ input:focus, select:focus {
 
 .file-dropzone {
     border: 2px dashed rgba(255, 255, 255, 0.2);
-    padding: 20px;
+    padding: 16px;
     text-align: center;
     border-radius: 10px;
     cursor: pointer;
@@ -154,9 +154,9 @@ input:focus, select:focus {
 }
 
 .upload-icon {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .file-dropzone p {
@@ -180,7 +180,7 @@ input:focus, select:focus {
     font-size: 1rem;
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
-    margin-top: 10px;
+    margin-top: 6px;
 }
 
 .btn-glow:hover {
@@ -199,7 +199,7 @@ input:focus, select:focus {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
-    padding: 6px 12px;
+    padding: 8px 12px;
     border-radius: 6px;
     font-size: 0.85rem;
     cursor: pointer;

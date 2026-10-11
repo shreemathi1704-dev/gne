@@ -10,28 +10,6 @@ CANCER_DATABASE = {
         "diagnostic_tests": ["Mammography", "Ultrasound", "MRI when indicated", "Biopsy", "ER/PR/HER2 testing"],
         "important_genes": ["BRCA1", "BRCA2", "TP53", "PIK3CA"]
     },
-    "Lung Adenocarcinoma": {
-        "symptoms": {
-            "Child": ["Extremely rare", "Persistent cough/breathlessness"],
-            "Young": ["Persistent cough", "Chest pain", "Breathlessness"],
-            "Adult": ["Cough", "Breathlessness", "Weight loss"],
-            "Older adult": ["Cough", "Breathlessness", "Weight loss"]
-        },
-        "clinical_findings": ["Lung lesion", "Abnormal respiratory findings"],
-        "diagnostic_tests": ["Chest X-ray", "CT Scan", "Bronchoscopy/biopsy", "Molecular testing"],
-        "important_genes": ["EGFR", "ALK", "ROS1", "TP53"]
-    },
-    "Acute Myeloid Leukemia (AML)": {
-        "symptoms": {
-            "Child": ["Fever", "Fatigue", "Bruising", "Infections"],
-            "Young": ["Fatigue", "Fever", "Bleeding/bruising"],
-            "Adult": ["Fatigue", "Infections", "Bleeding"],
-            "Older adult": ["Fatigue", "Infections", "Bleeding"]
-        },
-        "clinical_findings": ["Abnormal CBC", "Pallor", "Low platelets"],
-        "diagnostic_tests": ["Complete Blood Count (CBC)", "Blood smear", "Bone-marrow examination", "Cytogenetic/molecular tests"],
-        "important_genes": ["FLT3", "NPM1", "DNMT3A", "IDH1"]
-    },
     "Colorectal Adenocarcinoma": {
         "symptoms": {
             "Child": ["Rare", "Bowel changes"],
@@ -43,11 +21,9 @@ CANCER_DATABASE = {
         "diagnostic_tests": ["Stool testing", "Colonoscopy", "Biopsy", "CT Scan"],
         "important_genes": ["APC", "TP53", "KRAS", "BRAF"]
     }
-    # (You can add the rest of the 33 cancers following this exact dictionary structure)
 }
 
 def get_cancer_details(cancer_name: str, age_group: str):
-    # Default fallback if exact match isn't populated
     default_data = {
         "symptoms": ["Unexplained fatigue", "Weight loss", "Persistent localized pain"],
         "clinical_findings": ["Abnormal tissue mass", "Regional involvement"],
