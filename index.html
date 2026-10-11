@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q-Cancer | AI Genomic Diagnostic Intelligence</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <span class="pulse-icon">🧬</span>
+                <h1>Q-CANCER <span class="badge">AI GENOMICS</span></h1>
+            </div>
+            <p class="subtitle">Advanced Quantum-Inspired Genomic Classifier & Clinical Decision Support</p>
+        </header>
+
+        <div class="main-grid">
+            <!-- Input Form Card -->
+            <section class="card input-card">
+                <h2>Patient & Genomic Profile</h2>
+                <form id="predictionForm">
+                    <div class="input-group">
+                        <label for="patientId">Patient ID</label>
+                        <input type="text" id="patientId" value="PAT-001" required>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" value="42" min="1" max="120" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="sex">Sex</label>
+                            <select id="sex">
+                                <option value="Female" selected>Female</option>
+                                <option value="Male">Male</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Auto-Classified Age Group</label>
+                        <div id="ageGroupDisplay" class="readonly-badge">Adult</div>
+                    </div>
+
+                    <div class="input-group file-dropzone" id="dropZone">
+                        <span class="upload-icon">📁</span>
+                        <p id="fileNameText">Drag & drop genomic CSV file here or <span class="browse">browse</span></p>
+                        <input type="file" id="csvFile" accept=".csv" required>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="btn-glow">Run AI Genomic Analysis</button>
+                </form>
+            </section>
+
+            <!-- Report Dashboard Output Card -->
+            <section class="card report-card" id="reportSection" style="display: none;">
+                <div class="report-header">
+                    <h2>AI Genomic Analysis Report</h2>
+                    <button id="downloadBtn" class="btn-secondary">Export Report</button>
+                </div>
+
+                <div class="report-body" id="reportContent">
+                    <!-- Dynamic Data Injected via JavaScript -->
+                </div>
+            </section>
+        </div>
+
+        <footer class="footer-disclaimer">
+            <p><strong>Disclaimer:</strong> This is an AI-based genomic analysis and classification report. It is NOT a medical diagnosis. Confirmation requires formal clinical evaluation, laboratory tests, imaging, and pathology/biopsy.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
